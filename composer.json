@@ -1,0 +1,14 @@
+{
+  "name": "drupal/commerce_enchanced_ecommerce",
+  "type": "drupal-module",
+  "description": "Send data to google enchanced ecommerce.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/commerce_enchanced_ecommerce",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/commerce_enchanced_ecommerce",
+    "source": "http://cgit.drupalcode.org/commerce_enchanced_ecommerce"
+  },
+  "require": { }
+}

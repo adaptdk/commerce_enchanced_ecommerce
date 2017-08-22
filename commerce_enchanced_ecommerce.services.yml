@@ -1,0 +1,7 @@
+services:
+  commerce_enchanced_ecommerce.product_ajax_change:
+    class: Drupal\commerce_enchanced_ecommerce\EventSubscriber\ProductAjaxChange
+    arguments: []
+    tags:
+      - { name: event_subscriber }
+

@@ -1,0 +1,7 @@
+name: Commerce enchanced ecommerce
+type: module
+description: Send data to google enchanced ecommerce.
+core: 8.x
+package: Commerce (contrib)
+dependencies:
+  - commerce

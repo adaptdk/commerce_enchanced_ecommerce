@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * @file
+ * Contains commerce_enchanced_ecommerce.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\commerce_enchanced_ecommerce\EnchancedECommerce;
+
+/**
+ * Implements hook_help().
+ */
+function commerce_enchanced_ecommerce_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the commerce_enchanced_ecommerce module.
+    case 'help.page.commerce_enchanced_ecommerce':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Send data to google enchanced ecommerce.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function commerce_enchanced_ecommerce_preprocess_commerce_product(&$variables) {
+  $elements = $variables['elements'];
+  if ($elements['#view_mode'] == 'full') {
+    /** @var \Drupal\commerce_product\Entity $product */
+    $product = $elements["#commerce_product"];
+    $variant = $product->getDefaultVariation();
+    $enchanchedEcommerce = new EnchancedECommerce($product, $variant);
+    $details = $enchanchedEcommerce->getProductDetails();
+
+    $variables['#attached']['library'][] = 'commerce_enchanced_ecommerce/product_details';
+    $variables['#attached']['drupalSettings']['commerceEnchancedECommerce'] = $details;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
+  if (strpos($form_id, 'commerce_order_item_add_to_cart_form_commerce_product') !== FALSE) {
+    $form['#attached']['library'][] = 'commerce_enchanced_ecommerce/add_to_cart';
+    /** @var \Drupal\commerce_order\Entity\OrderItemInterface $orderItem */
+    $orderItem = $form_state->getFormObject()->getEntity();
+    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $purchased_entity */
+    $purchased_entity = $orderItem->getPurchasedEntity();
+    /** @var \Drupal\commerce_product\Entity\ProductInterface $purchased_entity */
+    $product = $purchased_entity->getProduct();
+    $enchanchedEcommerce = new EnchancedECommerce($product, $purchased_entity);
+    $details = $enchanchedEcommerce->getCartActionDetails();
+    /** @var \Drupal\commerce_store\Entity\Store $store */
+    $store = \Drupal::service('commerce_store.store_context')->getStore();
+    $details->currencyCode = $store->getDefaultCurrencyCode();
+    $form['#attached']['drupalSettings']['ceeAddToCart'] = $details;
+  }
+  if (strpos($form_id, 'commerce_cart_form') !== FALSE) {
+    $form['#attached']['library'][] = 'commerce_enchanced_ecommerce/remove_from_cart';
+  }
+}

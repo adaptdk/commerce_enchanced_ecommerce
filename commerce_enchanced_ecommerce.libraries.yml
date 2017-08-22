@@ -1,0 +1,25 @@
+utility:
+  version: VERSION
+  js:
+    js/utility.js: {}
+
+product_details:
+  version: VERSION
+  dependencies:
+    - commerce_enchanced_ecommerce/utility
+  js:
+    js/productDetails.js: {}
+
+add_to_cart:
+  version: VERSION
+  dependencies:
+    - commerce_enchanced_ecommerce/utility
+  js:
+    js/addToCart.js: {}
+
+remove_from_cart:
+  version: VERSION
+  dependencies:
+    - commerce_enchanced_ecommerce/utility
+  js:
+    js/removeFromCart.js: {}
