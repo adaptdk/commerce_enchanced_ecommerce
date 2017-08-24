@@ -38,8 +38,8 @@ class EnchancedECommerceOrder {
         $shipping = $adjustment->getAmount()->getNumber();
       }
     }
-    if (!empty($this->order->get('shipments'))) {
-      $shipments = $this->order->get('shipments');
+    if ($this->order->hasField('shipments') && !$this->order->get('shipments')->isEmpty()) {
+      $shipments = $this->order->get('shipments')->referencedEntities();
       /** @var \Drupal\commerce_shipping\Entity\Shipment $shipment */
       foreach ($shipments as $shipment) {
         $items = $shipment->getItems();
@@ -68,6 +68,7 @@ class EnchancedECommerceOrder {
         $orderItems[] = $enchanchedEcommerce->getOrderItemDetails();
       }
     }
+    $payment = reset($payments);
     $paymentId = (!empty($payment->remote_id->value)) ? $payment->remote_id->value : $payment->id();
     $orderData = new \stdClass();
     $orderData->id = $paymentId;
