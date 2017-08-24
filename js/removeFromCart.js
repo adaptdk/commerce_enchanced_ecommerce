@@ -2,8 +2,10 @@
 
     Drupal.behaviors.ceeAddToCart = {
         attach: function(context, settings) {
-            $('#edit-submit', context).on('mousedown', function (evt) {
-                var detailsObj = settings.ceeAddToCart,
+            $('.delete-order-item', context).on('click', function (evt) {
+                evt.preventDefault();
+                var productId = $(this).closest('.cart-list--item, tr').attr('data-product-id'),
+                    detailsObj = settings.ceeRemoveFromCart[productId],
                     product = $.getAdjustCartInformation(detailsObj);
                 dataLayer.push({
                     'event': 'removeFromCart',

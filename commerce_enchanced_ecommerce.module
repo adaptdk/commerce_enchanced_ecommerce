@@ -61,7 +61,23 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
     $details->currencyCode = $store->getDefaultCurrencyCode();
     $form['#attached']['drupalSettings']['ceeAddToCart'] = $details;
   }
-  if (strpos($form_id, 'commerce_cart_form') !== FALSE) {
+  if (strpos($form_id, '_cart_form') !== FALSE) {
     $form['#attached']['library'][] = 'commerce_enchanced_ecommerce/remove_from_cart';
+    $carts = \Drupal::service('commerce_cart.cart_provider')->getCarts();
+//    if (!empty($carts)) {
+//     $products = [];
+//     foreach ($carts as $cart_id => $cart) {
+//        if (isset($form[$cart_id])) {
+//          $items = &$form[$cart_id]['shipments'][0]['content']['#shipment_items'];
+//          foreach ($items as &$item) {
+//            $variant = $item['purchased_entity']['#commerce_product_variation'];
+//            $product = $variant->getProduct();
+//            $enchanchedEcommerce = new EnchancedECommerce($product, $variant);
+//            $products[$variant->id()] = $enchanchedEcommerce->getCartActionDetails();
+//          }
+//        }
+//      }
+//      $form['#attached']['drupalSettings']['ceeRemoveFromCart'] = $products;
+//    }
   }
 }
