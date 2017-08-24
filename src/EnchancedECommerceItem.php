@@ -2,15 +2,14 @@
 
 namespace Drupal\commerce_enchanced_ecommerce;
 
-use Drupal\commerce_product\Entity\Product;
-use Drupal\commerce_product\Entity\ProductVariation;
+use Drupal\commerce_order\Entity\OrderItemInterface;
 
 /**
  * Class EnchancedECommerce
  *
  * Handle ecommerce data.
  */
-class EnchancedECommerce {
+class EnchancedECommerceItem {
 
   public $title = '';
 
@@ -24,52 +23,43 @@ class EnchancedECommerce {
 
   public $productId = 0;
 
-  public $variantId = 0;
+  public $sku = 0;
 
   public $quantity = '';
 
+  protected $coupon = '';
+
   /**
    * Constructs a new ShipmentItem object.
-   *
-   * @param array $definition
-   *   The definition.
    */
-  public function __construct(Product $product, ProductVariation $variation, int $quantity = 1) {
-
+  public function __construct(OrderItemInterface $orderItem) {
+    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variation */
+    $variation = $orderItem->getPurchasedEntity();
+    /** @var \Drupal\commerce_product\Entity\ProductInterface $variation */
+    $product = $variation->getProduct();
     $this->title = $product->label();
-    $this->price = round($variation->getPrice()->getNumber(), 2);
+    $this->price = round($orderItem->getTotalPrice()->getNumber(), 2);
     $this->variant = $variation->label();
     $this->productId = $product->id();
-    $this->variantId = $variation->id();
+    $this->sku = $variation->getSku();
     if ($product->hasField('field_brand') && !$product->field_brand->isEmpty()) {
       $this->brand = $product->field_brand->entity->label();
     }
     if ($product->hasField('field_category') && !$product->field_category->isEmpty()) {
       $this->category = $product->field_category->entity->label();
     }
-    $this->quantity = $quantity;
+    $this->quantity = $orderItem->getQuantity();
+
+    // @todo implement coupon.
+    // $this->coupon = $orderItem->coupon;
   }
 
-  public function getProductDetails() {
+  public function getOrderItemDetails() {
     $details = new \stdClass();
-    $details->title = $this->title;
+    $details->name = $this->title;
     $details->variant = $this->variant;
     $details->price = $this->price;
-    if ($this->brand !== '') {
-      $details->brand = $this->brand;
-    }
-    if ($this->category !== '') {
-      $details->category = $this->category;
-    }
-    return $details;
-  }
-
-  public function getCartActionDetails() {
-    $details = new \stdClass();
-    $details->title = $this->title;
-    $details->variant = $this->variant;
-    $details->price = $this->price;
-    $details->id = $this->variantId;
+    $details->id = $this->sku;
     $details->quantity = $this->quantity;
     if ($this->brand !== '') {
       $details->brand = $this->brand;
@@ -77,6 +67,8 @@ class EnchancedECommerce {
     if ($this->category !== '') {
       $details->category = $this->category;
     }
+    // @todo implement coupon.
+    // $details->coupon = $this->coupon;
     return $details;
   }
 }

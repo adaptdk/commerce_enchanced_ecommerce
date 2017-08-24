@@ -23,3 +23,10 @@ remove_from_cart:
     - commerce_enchanced_ecommerce/utility
   js:
     js/removeFromCart.js: {}
+
+checkout_complete:
+  version: VERSION
+  dependencies:
+    - commerce_enchanced_ecommerce/utility
+  js:
+    js/checkoutComplete.js: {}
