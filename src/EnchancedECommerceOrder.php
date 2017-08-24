@@ -38,20 +38,35 @@ class EnchancedECommerceOrder {
         $shipping = $adjustment->getAmount()->getNumber();
       }
     }
-    $items = $this->order->getItems();
-    $paymentList = [];
-    foreach ($payments as $payment) {
-      $paymentList[] = $payment;
-    }
-    $orderItems = [];
-    /** @var \Drupal\commerce_order\Entity\OrderItemInterface $orderItem */
-    foreach ($items as $orderItem) {
-      $purchased_entity = $orderItem->getPurchasedEntity();
-      if (!$purchased_entity instanceof ProductVariationInterface) {
-        continue;
+    if (!empty($this->order->get('shipments'))) {
+      $shipments = $this->order->get('shipments');
+      /** @var \Drupal\commerce_shipping\Entity\Shipment $shipment */
+      foreach ($shipments as $shipment) {
+        $items = $shipment->getItems();
+        /** @var \Drupal\commerce_shipping\ShipmentItem $shipmentItem */
+        foreach ($items as $shipmentItem) {
+          $orderItem = \Drupal::entityTypeManager()->getStorage('commerce_order_item')->load($shipmentItem->getOrderItemId());
+          $purchased_entity = $orderItem->getPurchasedEntity();
+          if (!$purchased_entity instanceof ProductVariationInterface) {
+            continue;
+          }
+          $enchanchedEcommerce = new EnchancedECommerceItem($orderItem, $shipmentItem);
+          $orderItems[] = $enchanchedEcommerce->getOrderItemDetails();
+        }
       }
-      $enchanchedEcommerce = new EnchancedECommerceItem($orderItem);
-      $orderItems[] = $enchanchedEcommerce->getOrderItemDetails();
+    }
+    else {
+      $items = $this->order->getItems();
+      $orderItems = [];
+      /** @var \Drupal\commerce_order\Entity\OrderItemInterface $orderItem */
+      foreach ($items as $orderItem) {
+        $purchased_entity = $orderItem->getPurchasedEntity();
+        if (!$purchased_entity instanceof ProductVariationInterface) {
+          continue;
+        }
+        $enchanchedEcommerce = new EnchancedECommerceItem($orderItem);
+        $orderItems[] = $enchanchedEcommerce->getOrderItemDetails();
+      }
     }
     $paymentId = (!empty($payment->remote_id->value)) ? $payment->remote_id->value : $payment->id();
     $orderData = new \stdClass();

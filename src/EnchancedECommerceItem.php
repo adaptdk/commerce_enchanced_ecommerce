@@ -3,6 +3,7 @@
 namespace Drupal\commerce_enchanced_ecommerce;
 
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\commerce_shipping\ShipmentItem;
 
 /**
  * Class EnchancedECommerce
@@ -32,13 +33,18 @@ class EnchancedECommerceItem {
   /**
    * Constructs a new ShipmentItem object.
    */
-  public function __construct(OrderItemInterface $orderItem) {
+  public function __construct(OrderItemInterface $orderItem, ShipmentItem $shipmentItem = NULL) {
     /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variation */
     $variation = $orderItem->getPurchasedEntity();
     /** @var \Drupal\commerce_product\Entity\ProductInterface $variation */
     $product = $variation->getProduct();
     $this->title = $product->label();
-    $this->price = round($orderItem->getTotalPrice()->getNumber(), 2);
+    if (is_null($shipmentItem)) {
+      $this->price = round($orderItem->getTotalPrice()->getNumber(), 2);
+    }
+    else {
+      $this->price = round($shipmentItem->getDeclaredValue()->getNumber(), 2);
+    }
     $this->variant = $variation->label();
     $this->productId = $product->id();
     $this->sku = $variation->getSku();
@@ -48,7 +54,12 @@ class EnchancedECommerceItem {
     if ($product->hasField('field_category') && !$product->field_category->isEmpty()) {
       $this->category = $product->field_category->entity->label();
     }
-    $this->quantity = $orderItem->getQuantity();
+    if (is_null($shipmentItem)) {
+      $this->quantity = $orderItem->getQuantity();
+    }
+    else {
+      $this->quantity = $shipmentItem->getQuantity();
+    }
 
     // @todo implement coupon.
     // $this->coupon = $orderItem->coupon;

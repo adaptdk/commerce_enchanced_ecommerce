@@ -81,7 +81,7 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
 //      $form['#attached']['drupalSettings']['ceeRemoveFromCart'] = $products;
 //    }
   }
-  if (strpos($form_id, 'commerce_checkout_flow_multistep_interflora') !== FALSE) {
+  if (strpos($form_id, 'commerce_checkout_flow') !== FALSE) {
     if ($form['#step_id'] === 'complete') {
       /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
       $order = $form_state->getFormObject()->getOrder();
