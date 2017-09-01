@@ -1,6 +1,4 @@
 (function($) {
-
-    productVariant = '';
     Drupal.behaviors.ceeProductDetails = {
         attach: function(context, settings) {
             if (settings.stepId === 'complete') {
