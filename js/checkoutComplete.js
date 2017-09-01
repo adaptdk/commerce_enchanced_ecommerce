@@ -13,9 +13,9 @@
                         'event': 'checkoutComplete',
                         'ecommerce': {
                             'purchase': {
-                                actionField: details
-                            },
-                            'products': items
+                                'actionField': details,
+                                'products': items
+                            }
                         }
                     });
                 }
