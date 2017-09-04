@@ -7,8 +7,11 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\commerce_enchanced_ecommerce\EnchancedECommerceProduct;
-use Drupal\commerce_enchanced_ecommerce\EnchancedECommerceOrder;
+use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceCheckout;
+use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceProduct;
+use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceCartProduct;
+use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceOrder;
+use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceShipmentProduct;
 
 /**
  * Implements hook_help().
@@ -36,8 +39,7 @@ function commerce_enchanced_ecommerce_preprocess_commerce_product(&$variables) {
     $product = $elements["#commerce_product"];
     $variant = $product->getDefaultVariation();
     $enchanchedEcommerce = new EnchancedECommerceProduct($product, $variant);
-    $details = $enchanchedEcommerce->getProductDetails();
-
+    $details = $enchanchedEcommerce->toExport();
     $variables['#attached']['library'][] = 'commerce_enchanced_ecommerce/product_details';
     $variables['#attached']['drupalSettings']['commerceEnchancedECommerce'] = $details;
   }
@@ -55,8 +57,8 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
     $purchased_entity = $orderItem->getPurchasedEntity();
     /** @var \Drupal\commerce_product\Entity\ProductInterface $purchased_entity */
     $product = $purchased_entity->getProduct();
-    $enchanchedEcommerce = new EnchancedECommerceProduct($product, $purchased_entity);
-    $details = $enchanchedEcommerce->getCartActionDetails();
+    $enchanchedEcommerce = new EnchancedECommerceCartProduct($product, $purchased_entity);
+    $details = $enchanchedEcommerce->toExport();
     /** @var \Drupal\commerce_store\Entity\Store $store */
     $store = \Drupal::service('commerce_store.store_context')->getStore();
     $details->currencyCode = $store->getDefaultCurrencyCode();
@@ -82,11 +84,30 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
 //    }
   }
   if (strpos($form_id, 'commerce_checkout_flow') !== FALSE) {
+    /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
+    $order = $form_state->getFormObject()->getOrder();
     if ($form['#step_id'] === 'complete') {
-      /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
-      $order = $form_state->getFormObject()->getOrder();
       $enchanchedEcommerce = new EnchancedECommerceOrder($order);
       $enchanchedEcommerce->getOrderCompleteData($form);
+    }
+
+    $products = [];
+    foreach ($order->get('shipments') as $shipmentListItem) {
+      /** @var \Drupal\interflora_shipping\Entity\Shipment $shipment */
+      $shipment = $shipmentListItem->entity;
+      foreach ($shipment->getItems() as $shipmentItem) {
+        $shipmentProductInfo = new EnchancedECommerceShipmentProduct($shipmentItem, $shipment);
+        $products[] = $shipmentProductInfo->toExport();
+      }
+    }
+
+    $stepId = $order->get('checkout_step');
+    $payload = new EnchancedECommerceCheckout($stepId, $products);
+
+    if ($payload->stepIdToNumber($stepId) !== FALSE) {
+      $form['#attached']['drupalSettings']['checkout'] = $payload;
+      $form['#attached']['drupalSettings']['stepId'] = $stepId;
+      $form['#attached']['library'][] = 'interflora_order/googleECommerce';
     }
   }
 }

@@ -1,12 +1,14 @@
 <?php
 
-namespace Drupal\commerce_enchanced_ecommerce;
+namespace Drupal\commerce_enchanced_ecommerce\Model;
 
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 
 /**
  * Provides the completion message pane.
+ *
+ * @package Drupal\commerce_enchanced_ecommerce\Model
  */
 class EnchancedECommerceOrder {
 
@@ -51,7 +53,7 @@ class EnchancedECommerceOrder {
             continue;
           }
           $enchanchedEcommerce = new EnchancedECommerceItem($orderItem, $shipmentItem);
-          $orderItems[] = $enchanchedEcommerce->getOrderItemDetails();
+          $orderItems[] = $enchanchedEcommerce->toExport();
         }
       }
     }
@@ -65,7 +67,7 @@ class EnchancedECommerceOrder {
           continue;
         }
         $enchanchedEcommerce = new EnchancedECommerceItem($orderItem);
-        $orderItems[] = $enchanchedEcommerce->getOrderItemDetails();
+        $orderItems[] = $enchanchedEcommerce->toExport();
       }
     }
     $payment = reset($payments);

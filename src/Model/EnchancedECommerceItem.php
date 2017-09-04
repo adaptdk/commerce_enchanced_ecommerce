@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\commerce_enchanced_ecommerce;
+namespace Drupal\commerce_enchanced_ecommerce\Model;
 
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_shipping\ShipmentItem;
@@ -9,6 +9,8 @@ use Drupal\commerce_shipping\ShipmentItem;
  * Class EnchancedECommerce
  *
  * Handle ecommerce data.
+ *
+ * @package Drupal\commerce_enchanced_ecommerce\Model
  */
 class EnchancedECommerceItem {
 
@@ -24,7 +26,7 @@ class EnchancedECommerceItem {
 
   public $productId = 0;
 
-  public $sku = 0;
+  public $id = 0;
 
   public $quantity = '';
 
@@ -47,7 +49,7 @@ class EnchancedECommerceItem {
     }
     $this->variant = $variation->label();
     $this->productId = $product->id();
-    $this->sku = $variation->getSku();
+    $this->id = $variation->getSku();
     if ($product->hasField('field_brand') && !$product->field_brand->isEmpty()) {
       $this->brand = $product->field_brand->entity->label();
     }
@@ -65,21 +67,22 @@ class EnchancedECommerceItem {
     // $this->coupon = $orderItem->coupon;
   }
 
-  public function getOrderItemDetails() {
-    $details = new \stdClass();
-    $details->name = $this->title;
-    $details->variant = $this->variant;
-    $details->price = $this->price;
-    $details->id = $this->sku;
-    $details->quantity = $this->quantity;
-    if ($this->brand !== '') {
-      $details->brand = $this->brand;
+  /**
+   * Export function.
+   *
+   * @return \stdClass
+   *   The information
+   */
+  public function toExport() {
+    $return = new \stdClass();
+    $reflection = new \ReflectionObject($this);
+    $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
+
+    foreach ($properties as $property) {
+      $return->{$property->getName()} = $property->getValue($this);
     }
-    if ($this->category !== '') {
-      $details->category = $this->category;
-    }
-    // @todo implement coupon.
-    // $details->coupon = $this->coupon;
-    return $details;
+
+    return $return;
   }
+
 }
