@@ -83,10 +83,11 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
 //      $form['#attached']['drupalSettings']['ceeRemoveFromCart'] = $products;
 //    }
   }
-  if (strpos($form_id, 'commerce_checkout_flow') !== FALSE) {
+  if (strpos($form_id, 'commerce_checkout_flow') !== FALSE && $form_id !== 'commerce_checkout_flow_edit_form') {
     /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
     $order = $form_state->getFormObject()->getOrder();
-    if ($form['#step_id'] === 'complete') {
+    $stepId = $form['#step_id'];
+    if ($stepId === 'complete') {
       $enchanchedEcommerce = new EnchancedECommerceOrder($order);
       $enchanchedEcommerce->getOrderCompleteData($form);
     }
@@ -101,13 +102,11 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
       }
     }
 
-    $stepId = $order->get('checkout_step');
     $payload = new EnchancedECommerceCheckout($stepId, $products);
-
     if ($payload->stepIdToNumber($stepId) !== FALSE) {
       $form['#attached']['drupalSettings']['checkout'] = $payload;
       $form['#attached']['drupalSettings']['stepId'] = $stepId;
-      $form['#attached']['library'][] = 'interflora_order/googleECommerce';
+      $form['#attached']['library'][] = 'commerce_enchanced_ecommerce/checkout';
     }
   }
 }

@@ -24,6 +24,11 @@ remove_from_cart:
   js:
     js/removeFromCart.js: {}
 
+checkout:
+  version: VERSION
+  js:
+    js/checkout.js: {}
+
 checkout_complete:
   version: VERSION
   dependencies:
