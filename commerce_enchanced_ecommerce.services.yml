@@ -5,3 +5,6 @@ services:
     tags:
       - { name: event_subscriber }
 
+  commerce_enchanced_ecommerce.get_data:
+    class: Drupal\commerce_enchanced_ecommerce\DataCollector
+    arguments: []

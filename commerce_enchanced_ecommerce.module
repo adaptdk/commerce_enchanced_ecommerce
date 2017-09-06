@@ -37,9 +37,7 @@ function commerce_enchanced_ecommerce_preprocess_commerce_product(&$variables) {
   if ($elements['#view_mode'] == 'full') {
     /** @var \Drupal\commerce_product\Entity $product */
     $product = $elements["#commerce_product"];
-    $variant = $product->getDefaultVariation();
-    $enchanchedEcommerce = new EnchancedECommerceProduct($product, $variant);
-    $details = $enchanchedEcommerce->toExport();
+    $details = \Drupal::service('commerce_enchanced_ecommerce.get_data')->getProductData($product);
     $variables['#attached']['library'][] = 'commerce_enchanced_ecommerce/product_details';
     $variables['#attached']['drupalSettings']['commerceEnchancedECommerce'] = $details;
   }
@@ -53,12 +51,7 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
     $form['#attached']['library'][] = 'commerce_enchanced_ecommerce/add_to_cart';
     /** @var \Drupal\commerce_order\Entity\OrderItemInterface $orderItem */
     $orderItem = $form_state->getFormObject()->getEntity();
-    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $purchased_entity */
-    $purchased_entity = $orderItem->getPurchasedEntity();
-    /** @var \Drupal\commerce_product\Entity\ProductInterface $purchased_entity */
-    $product = $purchased_entity->getProduct();
-    $enchanchedEcommerce = new EnchancedECommerceCartProduct($product, $purchased_entity);
-    $details = $enchanchedEcommerce->toExport();
+    $details = \Drupal::service('commerce_enchanced_ecommerce.get_data')->getCartProductData($orderItem);
     /** @var \Drupal\commerce_store\Entity\Store $store */
     $store = \Drupal::service('commerce_store.store_context')->getStore();
     $details->currencyCode = $store->getDefaultCurrencyCode();
@@ -88,8 +81,7 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
     $order = $form_state->getFormObject()->getOrder();
     $stepId = $form['#step_id'];
     if ($stepId === 'complete') {
-      $enchanchedEcommerce = new EnchancedECommerceOrder($order);
-      $enchanchedEcommerce->getOrderCompleteData($form);
+      \Drupal::service('commerce_enchanced_ecommerce.get_data')->getOrderComplete($order, $form);
     }
 
     $products = [];
@@ -97,12 +89,11 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
       /** @var \Drupal\interflora_shipping\Entity\Shipment $shipment */
       $shipment = $shipmentListItem->entity;
       foreach ($shipment->getItems() as $shipmentItem) {
-        $shipmentProductInfo = new EnchancedECommerceShipmentProduct($shipmentItem, $shipment);
-        $products[] = $shipmentProductInfo->toExport();
+        $products[] = \Drupal::service('commerce_enchanced_ecommerce.get_data')->getShipmentProduct($shipmentItem, $shipment);
       }
     }
 
-    $payload = new EnchancedECommerceCheckout($stepId, $products);
+    $payload = \Drupal::service('commerce_enchanced_ecommerce.get_data')->getCheckoutStep($stepId, $products);
     if ($payload->stepIdToNumber($stepId) !== FALSE) {
       $form['#attached']['drupalSettings']['checkout'] = $payload;
       $form['#attached']['drupalSettings']['stepId'] = $stepId;

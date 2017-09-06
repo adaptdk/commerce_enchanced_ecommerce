@@ -40,6 +40,7 @@ class EnchancedECommerceOrder {
         $shipping = $adjustment->getAmount()->getNumber();
       }
     }
+    $orderItems = [];
     if ($this->order->hasField('shipments') && !$this->order->get('shipments')->isEmpty()) {
       $shipments = $this->order->get('shipments')->referencedEntities();
       /** @var \Drupal\commerce_shipping\Entity\Shipment $shipment */
@@ -59,7 +60,6 @@ class EnchancedECommerceOrder {
     }
     else {
       $items = $this->order->getItems();
-      $orderItems = [];
       /** @var \Drupal\commerce_order\Entity\OrderItemInterface $orderItem */
       foreach ($items as $orderItem) {
         $purchased_entity = $orderItem->getPurchasedEntity();
