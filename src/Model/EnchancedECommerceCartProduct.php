@@ -41,10 +41,14 @@ class EnchancedECommerceCartProduct {
     $this->price = round($variation->getPrice()->getNumber(), 2);
     $this->variant = $variation->label();
     if ($product->hasField('field_brand') && !$product->field_brand->isEmpty()) {
-      $this->brand = $product->field_brand->entity->label();
+      if (!is_null($product->field_brand->first()->entity)) {
+        $this->brand = $product->field_brand->first()->entity->label();
+      }
     }
     if ($product->hasField('field_category') && !$product->field_category->isEmpty()) {
-      $this->category = $product->field_category->first()->entity->label();
+      if (!is_null($product->field_category->first()->entity)) {
+        $this->category = $product->field_category->first()->entity->label();
+      }
     }
     $this->quantity = $quantity;
   }
