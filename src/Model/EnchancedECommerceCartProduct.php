@@ -36,7 +36,7 @@ class EnchancedECommerceCartProduct {
    */
   public function __construct(Product $product, ProductVariation $variation, int $quantity = 1) {
 
-    $this->title = $product->label();
+    $this->title = $product->getTitle();
     $this->id = $variation->getSku();
     $this->price = round($variation->getPrice()->getNumber(), 2);
     $this->variant = $variation->label();
