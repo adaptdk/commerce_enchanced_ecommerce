@@ -44,7 +44,7 @@ class EnchancedECommerceCartProduct {
       $this->brand = $product->field_brand->entity->label();
     }
     if ($product->hasField('field_category') && !$product->field_category->isEmpty()) {
-      $this->category = $product->field_category->entity->label();
+      $this->category = $product->field_category->first()->entity->label();
     }
     $this->quantity = $quantity;
   }
