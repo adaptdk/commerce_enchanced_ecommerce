@@ -14,7 +14,7 @@ use Drupal\commerce_shipping\ShipmentItem;
  */
 class EnchancedECommerceItem {
 
-  public $title = '';
+  public $name = '';
 
   public $brand = '';
 
@@ -23,8 +23,6 @@ class EnchancedECommerceItem {
   public $price = 0.00;
 
   public $variant = '';
-
-  public $productId = 0;
 
   public $id = 0;
 
@@ -40,7 +38,7 @@ class EnchancedECommerceItem {
     $variation = $orderItem->getPurchasedEntity();
     /** @var \Drupal\commerce_product\Entity\ProductInterface $variation */
     $product = $variation->getProduct();
-    $this->title = $product->label();
+    $this->name = $product->label();
     if (is_null($shipmentItem)) {
       $this->price = round($orderItem->getTotalPrice()->getNumber(), 2);
     }
@@ -48,7 +46,6 @@ class EnchancedECommerceItem {
       $this->price = round($shipmentItem->getDeclaredValue()->getNumber(), 2);
     }
     $this->variant = $variation->label();
-    $this->productId = $product->id();
     $this->id = $variation->getSku();
     if ($product->hasField('field_brand') && !$product->field_brand->isEmpty()) {
       $this->brand = $product->field_brand->entity->label();
