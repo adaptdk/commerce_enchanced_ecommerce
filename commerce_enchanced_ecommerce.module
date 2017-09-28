@@ -41,6 +41,20 @@ function commerce_enchanced_ecommerce_preprocess_commerce_product(&$variables) {
     $variables['#attached']['library'][] = 'commerce_enchanced_ecommerce/product_details';
     $variables['#attached']['drupalSettings']['commerceEnchancedECommerce'] = $details;
   }
+  if ($elements['#view_mode'] == 'teaser') {
+    /** @var \Drupal\commerce_product\Entity $product */
+    $product = $elements["#commerce_product"];
+    $variable = $product->getDefaultVariation();
+    $variables['attributes']['data-variation'] = $variable->getTitle();
+    $details = \Drupal::service('commerce_enchanced_ecommerce.get_data')->getProductData($product);
+    $variables['attributes']['data-sku'] = $details->id;
+    if ($product->hasField('field_category') && !$product->field_category->isEmpty() && !is_null($product->field_category->entity)) {
+      $variables['attributes']['data-category'] = $product->field_category->entity->getName();
+    }
+    if ($product->hasField('field_brand') && !$product->field_brand->isEmpty() && !is_null($product->field_brand->entity)) {
+      $variables['attributes']['data-brand'] = $product->field_brand->entity->getName();
+    }
+  }
 }
 
 /**

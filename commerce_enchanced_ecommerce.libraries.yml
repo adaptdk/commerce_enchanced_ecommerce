@@ -3,6 +3,13 @@ utility:
   js:
     js/utility.js: {}
 
+product_list:
+  version: VERSION
+  dependencies:
+    - commerce_enchanced_ecommerce/utility
+  js:
+    js/productList.js: {}
+
 product_details:
   version: VERSION
   dependencies:

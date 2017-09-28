@@ -2,8 +2,8 @@
 
 namespace Drupal\commerce_enchanced_ecommerce\Model;
 
-use Drupal\commerce_product\Entity\Product;
-use Drupal\commerce_product\Entity\ProductVariation;
+use Drupal\commerce_product\Entity\ProductInterface;
+use Drupal\commerce_product\Entity\ProductVariationInterface;
 
 /**
  * Class EnchancedECommerceProduct
@@ -34,17 +34,17 @@ class EnchancedECommerceProduct {
    * @param array $definition
    *   The definition.
    */
-  public function __construct(Product $product, ProductVariation $variation, int $quantity = 1) {
+  public function __construct(ProductInterface $product, ProductVariationInterface $variation, int $quantity = 1) {
 
-    $this->title = $product->label();
+    $this->title = $product->getTitle();
     $this->id = $variation->getSku();
     $this->price = round($variation->getPrice()->getNumber(), 2);
     $this->variant = $variation->label();
-    if ($product->hasField('field_brand') && !$product->field_brand->isEmpty()) {
-      $this->brand = $product->field_brand->entity->label();
+    if ($product->hasField('field_brand') && !$product->field_brand->isEmpty() && !is_null($product->field_brand->entity)) {
+      $this->brand = $product->field_brand->entity->getName();
     }
-    if ($product->hasField('field_category') && !$product->field_category->isEmpty()) {
-      $this->category = $product->field_category->entity->label();
+    if ($product->hasField('field_category') && !$product->field_category->isEmpty() && !is_null($product->field_category->entity)) {
+      $this->category = $product->field_category->entity->getName();
     }
     $this->quantity = $quantity;
   }
