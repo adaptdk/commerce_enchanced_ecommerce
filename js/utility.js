@@ -3,7 +3,7 @@
     $.getListProducts = function () {
         var details = [],
             count = 1;
-        $('.item-list .product-teaser').each(function() {
+        $('.item-list .product-teaser:visible').each(function() {
             var product = {
                     'name': $('.field--name-title', this).text(),
                     'id': $(this).attr('data-sku'),
@@ -52,9 +52,8 @@
             'actionField': {},
             'products': [{
                 'name': detailsObj.title,
+                'id': detailsObj.id,
                 'price': detailsObj.price,
-                'brand': 'Google',
-                'category': 'Apparel',
                 'variant': detailsObj.variant
             }]
         };

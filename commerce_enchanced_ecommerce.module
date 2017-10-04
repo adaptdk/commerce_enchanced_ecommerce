@@ -7,11 +7,6 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceCheckout;
-use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceProduct;
-use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceCartProduct;
-use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceOrder;
-use Drupal\commerce_enchanced_ecommerce\Model\EnchancedECommerceShipmentProduct;
 
 /**
  * Implements hook_help().

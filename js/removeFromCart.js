@@ -1,6 +1,6 @@
 (function($) {
 
-    Drupal.behaviors.ceeAddToCart = {
+    Drupal.behaviors.ceeRemoveFromCart = {
         attach: function(context, settings) {
             $('.delete-order-item', context).on('click', function (evt) {
                 var productId = $(this).closest('.cart-list--item, tr').attr('data-product-id'),
