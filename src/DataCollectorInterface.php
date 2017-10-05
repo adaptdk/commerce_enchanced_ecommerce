@@ -19,8 +19,8 @@ interface DataCollectorInterface  {
 
   public function getShipmentProduct(ShipmentItem $item, ShipmentInterface $shipment);
 
-  public function getOrderComplete(OrderInterface $order, &$form);
+  public function getOrderComplete(OrderInterface $order, array &$form);
 
-  public function getCheckoutStep($stepId, $products);
+  public function getCheckoutStep($stepId, array $products);
 
 }
