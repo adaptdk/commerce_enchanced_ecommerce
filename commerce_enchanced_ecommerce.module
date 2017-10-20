@@ -62,7 +62,7 @@ function commerce_enchanced_ecommerce_form_alter(&$form, FormStateInterface &$fo
     $orderItem = $form_state->getFormObject()->getEntity();
     $details = \Drupal::service('commerce_enchanced_ecommerce.get_data')->getCartProductData($orderItem);
     /** @var \Drupal\commerce_store\Entity\Store $store */
-    $store = \Drupal::service('commerce_store.store_context')->getStore();
+    $store = \Drupal::service('commerce_store.current_store')->getStore();
     $details->currencyCode = $store->getDefaultCurrencyCode();
     $form['#attached']['drupalSettings']['ceeAddToCart'] = $details;
   }
